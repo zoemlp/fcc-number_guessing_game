@@ -1,0 +1,77 @@
+camper: /project$ psql --username=freecodecamp --dbname=postgres
+psql (12.17 (Ubuntu 12.17-1.pgdg22.04+1))
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+postgres=> \l
+                              List of databases
+   Name    |  Owner   | Encoding | Collate |  Ctype  |   Access privileges   
+-----------+----------+----------+---------+---------+-----------------------
+ postgres  | postgres | UTF8     | C.UTF-8 | C.UTF-8 | 
+ template0 | postgres | UTF8     | C.UTF-8 | C.UTF-8 | =c/postgres          +
+           |          |          |         |         | postgres=CTc/postgres
+ template1 | postgres | UTF8     | C.UTF-8 | C.UTF-8 | =c/postgres          +
+           |          |          |         |         | postgres=CTc/postgres
+(3 rows)
+
+postgres=> 
+postgres=>   CREATE DATABASE number_guess;
+CREATE DATABASE
+postgres=> \c number_guess
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+You are now connected to database "number_guess" as user "freecodecamp".
+number_guess=> \d
+Did not find any relations.
+number_guess=> CREATE TABLE users(user_id SERIAL PRIMARY KEY);
+CREATE TABLE
+number_guess=> \d users
+                               Table "public.users"
+ Column  |  Type   | Collation | Nullable |                Default                 
+---------+---------+-----------+----------+----------------------------------------
+ user_id | integer |           | not null | nextval('users_user_id_seq'::regclass)
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (user_id)
+
+number_guess=> ALTER TABLE users ADD COLUMN username VARCHAR(22) NOT NULL UNIQUE;
+ALTER TABLE
+number_guess=> \d users
+number_guess=> CREATE TABLE games(game_id SERIAL PRIMARY KEY);
+CREATE TABLE
+number_guess=> \d games
+                               Table "public.games"
+ Column  |  Type   | Collation | Nullable |                Default                 
+---------+---------+-----------+----------+----------------------------------------
+ game_id | integer |           | not null | nextval('games_game_id_seq'::regclass)
+Indexes:
+    "games_pkey" PRIMARY KEY, btree (game_id)
+
+number_guess=> ALTER TABLE games ADD COLUMN number_guesses INT NOT NULL;
+ALTER TABLE
+number_guess=> ALTER TABLE games ADD COLUMN user_id INT REFERENCES users(user_id);
+ALTER TABLE
+number_guess=> \d games
+                                   Table "public.games"
+     Column     |  Type   | Collation | Nullable |                Default                 
+----------------+---------+-----------+----------+----------------------------------------
+ game_id        | integer |           | not null | nextval('games_game_id_seq'::regclass)
+ number_guesses | integer |           | not null | 
+ user_id        | integer |           |          | 
+Indexes:
+    "games_pkey" PRIMARY KEY, btree (game_id)
+Foreign-key constraints:
+    "games_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id)
+
+number_guess=> select * from games;
+ game_id | number_guesses | user_id 
+---------+----------------+---------
+       1 |             10 |       2
+(1 row)
+
+number_guess=> select * from users;
+ user_id | username 
+---------+----------
+       1 | luis
+       2 | kl
+(2 rows)
+
+number_guess=> 
